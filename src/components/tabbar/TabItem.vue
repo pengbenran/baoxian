@@ -40,25 +40,35 @@
         text-align: center;
         .m-tabbar-item-icon{
             display: block;
-            padding-top: 5px;
+            padding-top: 4px; 
             img{
-                width: 28px;
-                height: 28px;
+                width: 26px;
+                height: 26px;
+                margin: 0 auto;
             }
-
         }
         .m-tabbar-item-text{
             display: block;
             font-size: 10px;
-            color:#949494;
+            color:#333333;
+            padding-top: 3px;
         }
         &.is-active{
             .m-tabbar-item{
                 background:#ddd;
             }
             .m-tabbar-item-text{
-                color: #fc9632;
+                color: #468ff7;
             }
         }
     }
+     .m-tabbar-item:nth-child(2){
+     	    .m-tabbar-item-icon{
+     	    	img{
+		     	   width: 69px;
+		     	   height: 22px; 
+		     	   margin-top: 14px;
+            }
+     	    }
+     }
 </style>

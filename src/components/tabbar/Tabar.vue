@@ -36,7 +36,7 @@
     right: 0;
     width: 100%;
     overflow: hidden;
-    height: 60px;
+    height: 50px;
     background: #fff;
     border-top: 1px solid #e4e4e4;
 }
