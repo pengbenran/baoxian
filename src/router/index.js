@@ -9,11 +9,10 @@ import homeFlSucceed from '@/pages/home-fl-succeed/index'
 import hudongbaDetail from '@/pages/hudongba-detail/index'
 import hudongbaOrder from '@/pages/hudongba-order/index'
 import hudongbaOrderDetail from '@/pages/hudongba-order-detail/index'
-
 import eMemberCz from '@/pages/eMember-cz/index'
 import eMemberHd from '@/pages/eMember-hd/index'
 import eMemberJf from '@/pages/eMember-jf/index'
-
+import wscg from '@/pages/wscg/index'
 Vue.use(Router)
 export default new Router({
 	routes: [{
@@ -114,6 +113,14 @@ export default new Router({
 			meta: {
 				title: '积分商城'
 			},
-		}
+		},
+		{
+			path: '/wscg',
+			name: 'wscg',
+			component: wscg,
+			meta: {
+				title: '完善信息'  
+			},
+		},
 	]
 })

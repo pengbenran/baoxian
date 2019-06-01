@@ -14,11 +14,6 @@
 				<span>手机号码</span>
 				<span><input type="number" placeholder="请输入手机号"/></span>
 			</div>
-			<div class="inp3">
-				<span>验证码</span>
-				<span><input type="text" placeholder="请输入验证码"/></span>
-			</div>
-
 			<div class="more" @click="jump">确定</div>
 		</div>
 	</div>

@@ -28,9 +28,13 @@ export default {
 </script>
 <style scoped lang="less">
 	.home{
+		background: #FFFFFF;
+		height: 100%;
+		width: 100%;
+		position: absolute;
 		.banner{ 
 			width: 100%;
-			height: 405px;
+			height: 400px;
 			position: relative;
 			.img{width: 100%;height: 100%;}
 			.tit{
@@ -58,7 +62,7 @@ export default {
 			margin: 0 auto;
 			color: #ffffff;
 			font-size: 16px;
-			margin-top: 30px;
+			margin-top: 14px;
 		}
 		.jump{
 			width: 270px;
@@ -70,7 +74,7 @@ export default {
 			margin: 0 auto;
 			color: #ff9c20;
 			font-size: 16px;
-			margin-top: 18px;
+			margin-top: 12px;
 		}
 	}
 </style>

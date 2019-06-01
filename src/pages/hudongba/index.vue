@@ -21,7 +21,7 @@
 						<div class="prn">{{item.prn}}已报名</div>
 						<div class="liji">
 							<span>{{item.jf}}积分</span>
-							<span>立即预约</span>
+							<span>{{btntit}}</span>
 						</div>
 					</div>
 				</div>
@@ -43,12 +43,16 @@
 			//点击跳转
 			jump() {
 				this.$router.push({
-					path: '/hudongbaDetail'
+					path: '/hudongbaDetail',
+					query: {
+						btntit: this.btntit
+					}
 				})
 			},
 		},
 		data() {
 			return {
+				btntit:"立即预约",
 				select: 'tab3',
 				items: [{
 						url: "/static/images/flBanner.jpg"

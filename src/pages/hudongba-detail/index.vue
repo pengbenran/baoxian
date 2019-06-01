@@ -29,18 +29,27 @@
 				</div>
 			</div>
 			<div class="title-bottom">
-				<div class="bottom">
+				<div class="bottom1">
 					<span class="icon">&#xe605;</span>
 					<span>03-20  10:30至05-28   00：00</span>
 				</div>
-				<div class="bottom">
+				<div class="bottom2">
 					<span class="icon">&#xe60a;</span>
 					<span>线上活动</span>
 				</div>
-				<div class="bottom">
+				
+				<div class="bottom3" v-if="$route.query.btntit=='立即兑换'">
+					<span class="icon">&#xe607;</span>
+					<span>3465积分</span>
+				</div>
+				
+				<div class="bottom3" v-else>
 					<span class="icon">&#xe600;</span>
 					<span>已报名39人</span>
 				</div>
+				
+				
+				
 			</div>
 		</div>
 		<div class="xian"></div>
@@ -71,7 +80,7 @@
 				<span>分享</span>
 			</div>
 
-			<div class="btn" @click="btn">我要报名</div>
+			<div class="btn" @click="btn">{{$route.query.btntit}}</div>
 		</div>
 
 		<!--弹窗-->
@@ -473,7 +482,7 @@ input{outline: none;border: 0;background:transparent;}
 				/*padding-top: 70px;*/
 				box-sizing: border-box;
 				padding: 70px 12px 0 12px;
-				.bottom {
+				.bottom1,.bottom2,.bottom3 {
 					display: flex;
 					align-items: center;
 					margin-top: 20px;
