@@ -11,23 +11,38 @@
   </div>
 </template>
 <script>
+import API from '@/api/good'
 export default { 
-  methods: {
-  		//点击跳转
-		jump(){ 
-			this.$router.push({path:'/homeFlDetail'}) 
-		},
-  }, 
   data () {
     return {
-    	banner:'/static/images/flBanner.jpg',
+			banner:'/static/images/flBanner.jpg',
+			goodsId:'',
     	cant:[
     	  {img:"/static/images/flCant.jpg"},
     	  {img:"/static/images/flCant.jpg"},
     	  {img:"/static/images/flCant.jpg"},
     	]
     }
-  }
+	},
+	mounted(){
+		this.goodsId =  this.$route.query.id
+    this.Getdetail();
+	},
+	methods: {
+    Getdetail(){
+      API.GetgetGoodsInfo({goodsId:this.goodsId}).then((res) => {
+				console.log(res,"数据")
+			}).catch((err) => {
+				console.log("报错的数据",err)
+			});
+		},
+
+  		//点击跳转
+		jump(){ 
+			this.$router.push({path:'/homeFlDetail'}) 
+		},
+	}, 
+
 }
 </script>
 <style scoped lang="less">

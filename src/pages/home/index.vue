@@ -1,8 +1,8 @@
 <template>
 	<!--首页-->
 	<div class="home">
-		<div class="banner" v-for="(item,index) in banner" @click="jumpfl">
-			<img :src="item.img" />
+		<div class="banner" v-for="(item,index) in banner" @click="jumpfl(item.goodsId)">
+			<img :src="item.imageUrl" />
 		</div>
 
 		<!--弹窗-->
@@ -23,16 +23,42 @@
 
 <script>
 	import mTabbar from '@/components/tabbar/Tabar.vue'
+	import API from '@/api/home'
 	export default {
 		name: 'eFuli',
 		components: {
 			mTabbar
 		},
+		data() {
+			return {
+				select: 'tab1',
+				ishidd: true,
+				banner: []
+			}
+		},
+		mounted(){
+           this.GetBrand();
+		},
 		methods: {
+			//获取首页Brand
+			GetBrand(){
+				let that = this;
+				API.HomeBannerList().then(res => {
+					if(res.code == 0){
+						that.banner = res.getOneBanner;
+					}
+					console.log("成功后的数据",res,that.banner)
+				}).catch(err => {
+                    console.log("报错",err)
+				})
+			},
 			//点击跳转
-			jumpfl() {
+			jumpfl(goodid) {
 				this.$router.push({
-					path: '/homeFl'
+					path: '/homeFl',
+					query:{
+						id:goodid
+					}
 				})
 			},
 			//点击跳转
@@ -45,22 +71,6 @@
 				this.ishidd = false
 			}
 		},
-		data() {
-			return {
-				select: 'tab1',
-				ishidd: true,
-				banner: [{
-						img: "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1558933909328&di=b7dc442c52a4f789768e6ead2c6ac88f&imgtype=0&src=http%3A%2F%2Fpic1.win4000.com%2Fpic%2F5%2F4b%2F27ac682828.jpg"
-					},
-					{
-						img: "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=16705678,355648254&fm=26&gp=0.jpg"
-					},
-					{
-						img: "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1558934191088&di=80b6f24250a52d32f8731b5019fe3bdf&imgtype=0&src=http%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FCwYc0p53dSNG2Elwa1AujluDWQgdfMup7l85rfOl4fnujQlCQLMu4WReACkQIFAO9aKlogEFIQMKz75KHepuibg%2F640%3Fwx_fmt%3Djpeg"
-					}
-				]
-			}
-		}
 	}
 </script>
 <style scoped lang="less">
