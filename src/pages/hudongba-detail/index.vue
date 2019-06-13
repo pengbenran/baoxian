@@ -2,25 +2,25 @@
 	<!--活动详情-->
 	<div class="home">
 		<mt-swipe :auto="4000" style="width: 100%;height: 220px;">
-			<mt-swipe-item v-for="item in items" :key="item.id">
-				<img :src="item.url" class="img" />
+			<mt-swipe-item v-for="item in items" :key="item.imgId">
+				<img :src="item.original" class="img" />
 			</mt-swipe-item>
 		</mt-swipe>
 		<div class="title">
 			<div class="title-top">
-				<div class="name">医疗保险一般指基本医疗保险经济损失而建立</div>
+				<div class="name">{{Goods.name}}</div>
 				<div class="nums">
 					<div class="num1">
 						<span class="icon">&#xe609;</span>
-						<span>21294</span>
+						<span>{{Goods.viewCount}}</span>
 					</div>
 					<div class="num2">
 						<span class="icon">&#xe60b;</span>
-						<span>223</span>
+						<span>{{Goods.enableStore}}</span>
 					</div>
 					<div class="num3">
 						<span class="icon">&#xe61f;</span>
-						<span>130</span>
+						<span>{{Goods.buyCount}}</span>
 					</div>
 					<div class="bao">
 						<span class="icon">&#xe603;</span>
@@ -31,21 +31,21 @@
 			<div class="title-bottom">
 				<div class="bottom1">
 					<span class="icon">&#xe605;</span>
-					<span>03-20  10:30至05-28   00：00</span>
+					<span>{{Goods.big}}至{{Goods.small}}</span>
 				</div>
 				<div class="bottom2">
 					<span class="icon">&#xe60a;</span>
-					<span>线上活动</span>
+					<span>{{Goods.goodsType == 1?'线上活动':'线下活动'}}</span>
 				</div>
 				
 				<div class="bottom3" v-if="$route.query.btntit=='立即兑换'">
 					<span class="icon">&#xe607;</span>
-					<span>3465积分</span>
+					<span>{{Goods.point}}积分</span>
 				</div>
 				
 				<div class="bottom3" v-else>
 					<span class="icon">&#xe600;</span>
-					<span>已报名39人</span>
+					<span>已报名{{Goods.buyCount}}人</span>
 				</div>
 				
 				
@@ -59,8 +59,8 @@
 			<div class="tit">
 				图文详情
 			</div>
-			<div class="cant">
-
+			<div class="cant" v-html="Goods.intro">
+              
 			</div>
 		</div>
 		<!--底部-->
@@ -139,8 +139,36 @@
 </template>
 
 <script>
+    import API from '@/api/good'
 	export default {
+		data() {
+			return {
+				goodsId:'',
+				ispopup:false, 
+				ispop: true,
+				ispop1: false,
+				Goods:{},
+				items: [],
+			}
+		},
+		mounted(){
+			this.goodsId =  this.$route.query.id;
+			this.Getdetail();
+		},
 		methods: {
+			Getdetail(){
+				let that = this;
+				API.GetgetGoodsInfo({goodsId:this.goodsId}).then((res) => {
+					console.log(res,"数据")
+					if(res.code == 0){
+					   that.items = res.Gallery;
+					   that.Goods = res.Goods;
+					}
+				}).catch((err) => {
+					mui.toast('网络错误',{ duration:'long', type:'div' }) 	
+				});
+			},
+
 			popup(){
 				let that = this
 				that.ispopup = false
@@ -162,23 +190,7 @@
 				})
 			},
 		},
-		data() {
-			return {
-				ispopup:false, 
-				ispop: true,
-				ispop1: false,
-				items: [{
-						url: "/static/images/flBanner.jpg"
-					},
-					{
-						url: "/static/images/flBanner.jpg"
-					},
-					{
-						url: "/static/images/flBanner.jpg"
-					}
-				],
-			}
-		}
+
 	}
 </script>
 <style scoped lang="less">

@@ -3,9 +3,9 @@
 	<div class="home">
 		<div class="tit">充值积分</div>
 		<div class="list">
-			<div class="list-li" :class="curr==index?'list-li-on':''" v-for="(item,index) in rmb" @click="on(index)">
-				<div class="jf">{{item.jf}}积分</div>
-				<div class="rmb">{{item.rmb}}元</div>
+			<div class="list-li" :class="curr==index?'list-li-on':''" v-for="(item,index) in rmb" @click="on(index,item.money)">
+				<div class="jf">{{item.giveMoney}}积分</div>
+				<div class="rmb">{{item.money}}元</div>
 			</div>
 		</div>
 		<div class="text">
@@ -15,7 +15,7 @@
 
 		<div class="footer">
 			<div class="left">
-				共计：10 元
+				共计：{{money}} 元
 			</div>
 			<div class="right" @click="cz">
 				充值
@@ -32,16 +32,45 @@
 </template>
 
 <script>
+	import API from '@/api/insurance'
 	export default {
 		components: {},
+		data() {
+			return {
+				isPopup: false,
+				curr: 0,
+				money:0,
+				rmb: []
+			}
+		},
+		mounted(){
+			this.GetRmbList();
+		},
 		methods: {
 			btn(){
 				this.isPopup=false
 			},
-			on(index) {
+			on(index,money) {
 				console.log(index)
 				this.curr = index
+				this.money = money
 			},
+			
+			GetRmbList(){
+				let that = this;
+                API.GetaccountSettingList().then(res => {
+					if(res.code == 0){
+					   that.rmb = res.data;
+					   this.money = res.data[this.curr].money;
+					}else{
+						mui.toast('列表未请求到',{ duration:'long', type:'div' }) 
+					}
+				}).catch(err => {
+						mui.toast('网络错误',{ duration:'long', type:'div' }) 					
+				})
+			},
+
+            //充值事件点击
 			cz() {
 				this.$messagebox({				     
 					title: '温馨提示',
@@ -57,39 +86,16 @@
 						console.log('取消')					     
 					}				   
 				})
-			}
+			},
+
+			//充值事件请求
+			payMoney(){
+				let that = this;
+				// API.PosttopUp()
+			},
+			
 		},
-		data() {
-			return {
-				isPopup: false,
-				curr: 0,
-				rmb: [{
-						jf: 100,
-						rmb: 10
-					},
-					{
-						jf: 100,
-						rmb: 10
-					},
-					{
-						jf: 100,
-						rmb: 10
-					},
-					{
-						jf: 100,
-						rmb: 10
-					},
-					{
-						jf: 100,
-						rmb: 10
-					},
-					{
-						jf: 100,
-						rmb: 10
-					},
-				]
-			}
-		}
+
 	}
 </script>
 <style scoped lang="less">

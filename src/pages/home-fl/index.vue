@@ -25,7 +25,7 @@ export default {
     }
 	},
 	mounted(){
-		this.goodsId =  this.$route.query.id
+		this.goodsId =  this.$route.query.id;
     this.Getdetail();
 	},
 	methods: {

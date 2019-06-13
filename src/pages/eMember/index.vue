@@ -43,8 +43,14 @@
 		</div>
 		<!--banner广告图-->
 		<div class="advertising">
-			<img src="/static/images/flBanner.jpg" />
+			<mt-swipe :auto="4000" style="width: 100%;height: 220px;">
+			<mt-swipe-item v-for="item in brand" :key="item.imageId">
+				<img :src="item.imageUrl" class="img" />
+			</mt-swipe-item>
+		</mt-swipe>
 		</div>
+
+
 		<!--积分兑换-->
 		<div class="hd">
 			<div class="tit">
@@ -61,40 +67,17 @@
 <script>
 	import mTabbar from '@/components/tabbar/Tabar.vue'
 	import hd from '@/components/hd/index.vue'
+	import API from '@/api/insurance'
 	export default {
 		name: 'eMember',
 		components: {
 			mTabbar,
 			hd
 		},
-		methods: {
-			more(){
-				this.$router.push({
-					path: '/eMemberHd'
-				})
-			},
-			//点击积分商城
-			jumpJf() {
-				this.$router.push({
-					path: '/eMemberJf'
-				})
-			},
-			//点击跳转
-			jumpCz() {
-				this.$router.push({
-					path: '/eMemberCz'
-				})
-			},
-			//点击跳转
-			jumpdetail() { 
-				this.$router.push({
-					path: '/hudongbaDetail'
-				})
-			},
-		},
 		data() {
 			return {
 				select: 'tab4',
+				brand:[],
 				use: {
 					img: 'static/images/flBanner.jpg',
 					name: '我的名称',
@@ -130,7 +113,46 @@
 					}
 				]
 			}
-		}
+		},
+		mounted(){
+			this.GetBrandList();
+		},
+		methods: {
+			more(){
+				this.$router.push({
+					path: '/eMemberHd'
+				})
+			},
+			//点击积分商城
+			jumpJf() {
+				this.$router.push({
+					path: '/eMemberJf'
+				})
+			},
+			//点击跳转
+			jumpCz() {
+				this.$router.push({
+					path: '/eMemberCz'
+				})
+			},
+			//点击跳转
+			jumpdetail() { 
+				this.$router.push({
+					path: '/hudongbaDetail'
+				})
+			},
+			//getBrand
+			GetBrandList() {
+                API.GetThreeBanner().then(res => {
+					if(res.code == 0){
+                      this.brand = res.getThreeBanner
+					}
+				}).catch(err => {
+					console.log("数据报错");
+				})
+			}
+		},
+
 	}
 </script>
 <style scoped lang="less">

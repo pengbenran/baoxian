@@ -2,8 +2,8 @@
 	<!--互动吧-->
 	<div class="home">
 		<mt-swipe :auto="2000" style="width: 100%;height: 157px;">
-			<mt-swipe-item v-for="item in items" :key="item.id">
-				<img :src="item.url" class="img" />
+			<mt-swipe-item v-for="item in brandList" :key="item.id">
+				<img :src="item.imageUrl" class="img" />
 			</mt-swipe-item>
 		</mt-swipe>
 		<!---->
@@ -13,14 +13,14 @@
 				<span>精彩活动</span>
 			</div>
 			<div class="list">
-				<div class="list-li" v-for="(item,index) in list" @click="jump">
-					<div class="left"><img :src="item.img" /></div>
+				<div class="list-li" v-for="(item,index) in list" @click="jump(item.goodsId)">
+					<div class="left"><img :src="item.thumbnail" /></div>
 					<div class="right">
 						<div class="name">{{item.name}}</div>
-						<div class="text">{{item.txt}}</div>
+						<div class="text">{{item.name}}</div>
 						<div class="prn">{{item.prn}}已报名</div>
 						<div class="liji">
-							<span>{{item.jf}}积分</span>
+							<span>{{item.price}}积分</span>
 							<span>{{btntit}}</span>
 						</div>
 					</div>
@@ -34,74 +34,67 @@
 
 <script>
 	import mTabbar from '@/components/tabbar/Tabar.vue'
+	import API from '@/api/good'
 	export default {
 		name: 'hudongba',
 		components: {
 			mTabbar,
 		},
-		methods: {
-			//点击跳转
-			jump() {
-				this.$router.push({
-					path: '/hudongbaDetail',
-					query: {
-						btntit: this.btntit
-					}
-				})
-			},
-		},
 		data() {
 			return {
 				btntit:"立即预约",
 				select: 'tab3',
-				items: [{
-						url: "/static/images/flBanner.jpg"
-					},
-					{
-						url: "/static/images/flBanner.jpg"
-					},
-					{
-						url: "/static/images/flBanner.jpg"
-					}
-				],
-				list: [{
-						img: "/static/images/flBanner.jpg",
-						name: "一二三四五六七八九一二三四五六七八九",
-						txt: "进行中 线上活动",
-						prn: 350,
-						jf: 35,
-					},
-					{
-						img: "/static/images/flBanner.jpg",
-						name: "一二三四五六七八九一二三四五六七八九",
-						txt: "进行中 线上活动",
-						prn: 350,
-						jf: 35,
-					},
-					{
-						img: "/static/images/flBanner.jpg",
-						name: "一二三四五六七八九一二三四五六七八九",
-						txt: "进行中 线上活动",
-						prn: 350,
-						jf: 35,
-					},
-					{
-						img: "/static/images/flBanner.jpg",
-						name: "一二三四五六七八九一二三四五六七八九",
-						txt: "进行中 线上活动",
-						prn: 350,
-						jf: 35,
-					},
-					{
-						img: "/static/images/flBanner.jpg",
-						name: "一二三四五六七八九一二三四五六七八九",
-						txt: "进行中 线上活动",
-						prn: 350,
-						jf: 35,
-					},
-				]
+				brandList: [],
+				list: []
 			}
-		}
+		},
+		mounted(){
+			this.GetBrandList();
+			this.GetGoodAll();
+		},
+		methods: {
+			//点击跳转
+			jump(goodid) {
+				this.$router.push({
+					path: '/hudongbaDetail',
+					query: {
+						btntit:this.btntit,
+						id:goodid
+					}
+				})
+			},
+
+			//获取轮播
+			GetBrandList(){
+				let that = this;
+                API.GetGetTowBanner().then((res) => {
+                    if(res.code == 0){
+						this.brandList = res.getTwoBanner;
+					}else{
+					mui.toast('网络错误',{ duration:'long', type:'div' }) 							
+					}
+				}).catch((err) => {
+					mui.toast('网络错误',{ duration:'long', type:'div' }) 		
+				});
+			},
+
+
+			
+			//查询所有的活动
+			GetGoodAll(){
+				let that = this;
+                API.GetGoodsAll().then((res) => {
+                    if(res.code == 0){
+						that.list = res.Goods;
+					}else{
+					mui.toast('网络错误',{ duration:'long', type:'div' }) 							
+					}
+				}).catch((err) => {
+					mui.toast('网络错误',{ duration:'long', type:'div' }) 		
+				});
+			}
+		},
+
 	}
 </script>
 <style scoped lang="less">
