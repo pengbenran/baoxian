@@ -40,16 +40,13 @@
 				
 				<div class="bottom3" v-if="$route.query.btntit=='立即兑换'">
 					<span class="icon">&#xe607;</span>
-					<span>{{Goods.point}}积分</span>
+					<span>{{Goods.price}}积分</span>
 				</div>
 				
 				<div class="bottom3" v-else>
 					<span class="icon">&#xe600;</span>
 					<span>已报名{{Goods.buyCount}}人</span>
 				</div>
-				
-				
-				
 			</div>
 		</div>
 		<div class="xian"></div>
@@ -66,19 +63,21 @@
 		<!--底部-->
 		<div class="footer">
 			<div class="footer-li">
+				<a href='tel:+15623140205'>
 				<span class="icon">&#xe65e;</span>
 				<span>客服</span>
+				</a>
 			</div>
 
-			<div class="footer-li">
+			<div class="footer-li"  @click="goHome">
 				<span class="icon">&#xe601;</span>
 				<span>首页</span>
 			</div>
 
-			<div class="footer-li">
+			<!-- <div class="footer-li">
 				<span class="icon">&#xe655;</span>
 				<span>分享</span>
-			</div>
+			</div> -->
 
 			<div class="btn" @click="btn">{{$route.query.btntit}}</div>
 		</div>
@@ -89,27 +88,27 @@
 			<div class="cha icon" @click="popup">&#xe61a;</div>
 				<div class="tit">
 					<span class="icon"></span>
-					<span>温馨提示：次内容客户提供</span>
+					<span>温馨提示：{{addresBool?'每人限购一份':'请先完善信息修改'}} </span>
 				</div>
 				<div class="box">
-					[限时免费] 项目名称此处后台编辑
+					{{Goods.name}}
 				</div>
 				<div class="muntex">
 					<div class="txt">选择数量</div>
 					<div class="num">
 						<div class="left">
 							<span class="icon">&#xe604;</span>
-							<span>1</span>
+							<span>{{num}}</span>
 							<span class="icon">&#xe606;</span>
 						</div>
 						<div class="right">
-							剩余369张（每人限购1张）
+							已售出{{Goods.buyCount}}（每人限购1张）
 						</div>
 					</div>
 					<div class="btn">
 						<div class="left">
 							<span>合计</span>
-							<span>￥35积分</span>
+							<span>￥{{Goods.price}}积分</span>
 						</div>
 						<div class="right" @click="popBtn">下一步</div>
 					</div>
@@ -120,16 +119,16 @@
 				<div class="tit">报名人信息</div>
 				<div class="name">
 					<span>姓名</span>
-					<span><input type="text" placeholder="请输入您的姓名" /></span>
+					<span><input type="text" v-model="addresInfo.name" placeholder="请输入您的姓名" /></span>
 				</div>
 				<div class="phone">
 					<span>手机</span>
-					<span><input type="number" placeholder="请输入您的手机号" /></span>
+					<span><input type="number"  v-model="addresInfo.mobile"  placeholder="请输入您的手机号" /></span>
 				</div>
 				<div class="btn">
 					<div class="left">
 						<span>合计</span>
-						<span>￥35积分</span>
+						<span>￥{{Goods.price}}积分</span>
 					</div>
 					<div class="right" @click="jump">下一步</div>
 				</div>
@@ -139,7 +138,10 @@
 </template>
 
 <script>
-    import API from '@/api/good'
+	import { Toast } from 'vant';
+	import API from '@/api/good'
+	import API_C from '@/api/wscg'
+	import store from '@/store/store'
 	export default {
 		data() {
 			return {
@@ -147,6 +149,10 @@
 				ispopup:false, 
 				ispop: true,
 				ispop1: false,
+				addresBool:false,
+				btnClcik:true,
+				addresInfo:{},
+				num:1,
 				Goods:{},
 				items: [],
 			}
@@ -154,12 +160,17 @@
 		mounted(){
 			this.goodsId =  this.$route.query.id;
 			this.Getdetail();
+			this.IsAddMenberInfo(store.state.userInfo.memberId)
+		},
+		watch:{
+			num(val){
+				val <= 0 ? this.num = 0 : '' 
+			}
 		},
 		methods: {
 			Getdetail(){
 				let that = this;
 				API.GetgetGoodsInfo({goodsId:this.goodsId}).then((res) => {
-					console.log(res,"数据")
 					if(res.code == 0){
 					   that.items = res.Gallery;
 					   that.Goods = res.Goods;
@@ -169,25 +180,88 @@
 				});
 			},
 
+			//根据当前用户判断是否需要完善信息
+			IsAddMenberInfo(memberId){
+				let that = this;
+				API_C.GetMenberInfo({memberId:memberId}).then((res) => {
+					console.log("个人信息打印信息",res)
+					if(res.code == 0){
+					  that.addresInfo = res.memberAddressDO;
+                      that.addresBool = true;
+					}
+				})
+			},
+			//减
+			// close(){
+			// 	this.num-- 
+			// },
+			// add(){
+			// 	this.num++				
+			// },
+
+			
+
 			popup(){
 				let that = this
 				that.ispopup = false
 			},
 			btn(){
 				let that = this
-				that.ispopup = true
+				that.ispopup = true 
 			},
 			popBtn() {
 				let that = this
-				that.ispop = false
-				that.ispop1 = true
-				console.log(111)
+				if(that.addresBool){	
+					that.ispop = false
+					that.ispop1 = true
+				}else{
+                   this.$router.push({path: '/wscg'})
+				}
 			},
 			//点击跳转
 			jump() {
-				this.$router.push({
-					path: '/hudongbaOrder'
+				let that = this;
+					if(that.btnClcik){
+						that.btnClcik = false;
+						let data = {
+							goodsId:that.Goods.goodsId,
+							memberId:store.state.userInfo.memberId
+						}
+						API.SavaOrder(data).then(res => {
+							if(res.code == 0){
+								that.LoadPassOrder(res.orderDO.orderId)
+							}else{}
+							that.btnClcik = true;
+						}).catch(err => {
+							that.btnClcik = true;
+						})
+					}
+	
+			},
+
+			//改变订单状态
+			LoadPassOrder(orderId){
+				let that = this;
+				API.PassOrder({orderId:orderId}).then(res => {
+					if(res.code == 0){
+					  Toast.success('成功');
+					  	//点击跳转
+						// that.$router.push({path:'/hudongbaOrderDetail',query:{id:res.orderId}}) 
+						this.$router.push({path:'/hudongbaOrderDetail',query:{id:orderId}}) 
+					}else{
+						Toast.fail('失败');
+					}
+				}).catch(err => {
+					Toast.fail('失败');							
+				}).failed({
+
 				})
+			},
+
+			//跳转到首页
+			goHome(){
+				let that = this;
+				this.$router.push({path: '/home'})
 			},
 		},
 

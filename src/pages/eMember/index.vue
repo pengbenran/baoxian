@@ -4,11 +4,11 @@
 		<div class="hear">
 			<div class="hear-left">
 				<div class="img">
-					<img :src="use.img" />
+					<img :src="UserInfo.face" />
 				</div>
 				<div class="cant">
-					<div class="name">{{use.name}}</div>
-					<div class="jf">积分 : {{use.jf}}</div>
+					<div class="name">{{UserInfo.uname}}</div>
+					<div class="jf">积分 : {{UserInfo.point}}</div>
 				</div>
 			</div>
 			<div class="hear-right">
@@ -31,12 +31,12 @@
 				<span @click="more">更多  > </span>
 			</div>
 			<div class="totic">
-				<div @click="jumpdetail" class="list-li" v-for="(item,index) in list">
-					<div class="left"><img :src="item.img" /></div>
+				<div @click="jumpdetail" class="list-li" v-for="(item,index) in orderList" v-if="index < 2">
+					<div class="left"><img :src="item.orderItemsDO.image" /></div>
 					<div class="right">
-						<div class="zt">{{item.zt}}</div>
-						<div class="name">{{item.name}}</div>
-						<div class="day">{{item.day}} 开始</div>
+						<div class="zt">{{item.status==1?'待参加':'已参加'}}</div>
+						<div class="name">{{item.orderItemsDO.name}}</div>
+						<div class="day">{{item.shipNo}} 开始</div>
 					</div>
 				</div>
 			</div>
@@ -57,7 +57,7 @@
 				<span> <img src="/static/images/xing.png"/></span>
 				<span>精彩活动</span>
 			</div>
-			<hd :hdList='hdList'></hd>
+			<hd :hdList='Plist'></hd>
 		</div>
 
 		<mTabbar v-model="select"></mTabbar>
@@ -66,8 +66,12 @@
 
 <script>
 	import mTabbar from '@/components/tabbar/Tabar.vue'
+	import { Toast } from 'vant';
+	import store from '@/store/store'
 	import hd from '@/components/hd/index.vue'
 	import API from '@/api/insurance'
+	import API_O from '@/api/order'
+	import API_G from '@/api/good'
 	export default {
 		name: 'eMember',
 		components: {
@@ -77,45 +81,19 @@
 		data() {
 			return {
 				select: 'tab4',
+				UserInfo:{},
+				orderList:{},
 				brand:[],
-				use: {
-					img: 'static/images/flBanner.jpg',
-					name: '我的名称',
-					jf: '32'
-				},
-				hdList: [{
-						img: "/static/images/flBanner.jpg",
-						name: '这里的标题支持支这么',
-						jf: 3456
-					},
-					{
-						img: "/static/images/flBanner.jpg",
-						name: '这里的标题支持支这么',
-						jf: 3456
-					},
-					{
-						img: "/static/images/flBanner.jpg",
-						name: '这里的标题支持支这么',
-						jf: 3456
-					},
-				],
-				list: [{
-						img: '/static/images/flBanner.jpg',
-						zt: '待参与',
-						name: '这是产品标题文字到达一个数值',
-						day: '05-20 10:00'
-					},
-					{
-						img: '/static/images/flBanner.jpg',
-						zt: '已参加',
-						name: '这是产品标题文字到达一个数值',
-						day: '05-20 10:00'
-					}
-				]
+				Plist:[],
 			}
+		},
+		created(){
+			this.UserInfo = store.state.userInfo;
 		},
 		mounted(){
 			this.GetBrandList();
+			this.GetGoodAll();
+			this.GetOrderList(this.UserInfo.memberId);
 		},
 		methods: {
 			more(){
@@ -141,6 +119,25 @@
 					path: '/hudongbaDetail'
 				})
 			},
+
+			//获取订单列表
+			GetOrderList(memberId) {
+				let that = this;
+				let LoadToast = Toast.loading({
+					mask: true,
+					message: '加载中...'
+				});
+				API_O.GetOrderList({memberId:memberId}).then(res => {
+				   if(res.code == 0){
+					   that.orderList = res.orderList.filter(F => F.status != 0);
+					   store.commit('StoreOrderList',that.orderList)
+				   }
+				   LoadToast.clear()
+				}).catch(err => {
+					Toast.fail('失败');
+				})
+			},
+
 			//getBrand
 			GetBrandList() {
                 API.GetThreeBanner().then(res => {
@@ -150,6 +147,20 @@
 				}).catch(err => {
 					console.log("数据报错");
 				})
+			},
+
+			//查询所有的活动
+			GetGoodAll(){
+				let that = this;
+                API_G.GetGoodsAll().then((res) => {
+                    if(res.code == 0){
+						that.Plist = res.Goods;
+					}else{
+					mui.toast('网络错误',{ duration:'long', type:'div' }) 							
+					}
+				}).catch((err) => {
+					mui.toast('网络错误',{ duration:'long', type:'div' }) 		
+				});
 			}
 		},
 

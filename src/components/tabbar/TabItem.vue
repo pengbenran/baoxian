@@ -19,7 +19,7 @@
         computed: {
            isActive(){
            if(this.$parent.value===this.id&&this.$parent.value==="tab1"){
-                this.$router.push({path:'/'}); 
+                this.$router.push({path:'/home'}); 
                 return true;
            } 
             else if(this.$parent.value===this.id&&this.$parent.value==="tab3"){

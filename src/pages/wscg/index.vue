@@ -4,19 +4,22 @@
 		<div class="form">
 			<div class="inp1">
 				<span>姓名</span>
-				<span><input type="text" placeholder="请输入姓名"/></span>
+				<span><input type="text" v-model="name"  placeholder="请输入姓名"/></span>
 			</div>
 			<div class="inp2">
 				<span>手机号码</span>
-				<span><input type="number" placeholder="请输入手机号"/></span>
-				<span>获取验证码</span>
+				<span>
+				<input class="phone input-style " 
+				       :class="{'err-input' : phone.err}" v-model="phone.val" type="text" 
+					   placeholder="请输入手机号" oninput = "value=value.replace(/[^\d]/g,'')" maxlength="11" @blur="phone.test()">
+				</span>
 			</div>
-			<div class="inp3">
+			<!-- <div class="inp3">
 				<span>验证码</span>
 				<span><input type="text" placeholder="请输入验证码"/></span>
-			</div>
+			</div> -->
 
-			<div class="more" @click="btn">确定</div>
+			<div class="more" @click="AddMenberInfo">确定</div>
 		</div>
 		<!--弹窗-->
 		<div class="pop" v-if="ispop">
@@ -30,7 +33,43 @@
 </template>
 
 <script>
+    import API from "@/api/wscg";
+	import store from '@/store/store'
 	export default {
+		data() {
+			return {
+				ispop: false,
+				isreg:true,
+				name:'',
+				phone: {
+                    val : '',
+                    err : false,
+                    pass: false,
+                    test : function () {
+                        // 验证手机号
+                        let reg = /^1[0-9]{10}$/
+                        if (this.val == '' || this.val.length <= 10 || !reg.test(this.val)) {
+                            // vm.$data.hintShow = true
+                            // vm.$data.hint = '请输入正确的手机号'
+                            this.err = true
+                            return false
+                        }
+
+                        // vm.$data.hintShow = false
+                        // vm.$data.hint = ''
+                        this.err = false
+                        this.pass = true
+                        return true
+                    }
+                }
+			}
+		},
+		watch:{
+            mobile(val){
+
+               console.log(val)
+			}
+		},
 		methods: {
 			btn() {
 				this.ispop = true
@@ -38,15 +77,31 @@
 			//点击跳转
 			jump() {
 				this.$router.push({
-					path: '/'
+					path: '/home'
 				})
 			},
+
+			//添加用户信息
+			AddMenberInfo(){
+				let that = this;
+				console.log("你好世界阿萨德");
+				if(that.phone.pass){
+					API.addMemberInfo({name:that.name,mobile:that.phone.val,memberId:store.state.userInfo.memberId}).then((res) => {
+						console.log(res)
+						if(res.code == 0){
+							this.ispop = true
+						}else{
+
+						}
+					}).catch((err) => {
+						console.log("添加失败")
+					});
+				}
+			},
+
+		
 		},
-		data() {
-			return {
-				ispop: false
-			}
-		}
+
 	}
 </script>
 <style scoped lang="less">
@@ -158,4 +213,5 @@
 			}
 		}
 	}
+	.err-input{color:red;}
 </style>

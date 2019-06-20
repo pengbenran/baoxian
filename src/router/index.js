@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import eFuli from '@/pages/home/index'
+import two2 from '@/pages/404/index'
+import home from '@/pages/home2/index'
 import Hudongba from '@/pages/hudongba/index'
 import eMember from '@/pages/emember/index'
 import homeFl from '@/pages/home-fl/index'
@@ -13,10 +15,12 @@ import eMemberCz from '@/pages/eMember-cz/index'
 import eMemberHd from '@/pages/eMember-hd/index'
 import eMemberJf from '@/pages/eMember-jf/index'
 import wscg from '@/pages/wscg/index'
+import Write from '@/pages/Write/index'
 Vue.use(Router)
 export default new Router({
-	routes: [{
-			path: '/',
+	routes: [
+		{
+			path: '/home',
 			name: 'eFuli',
 			component: eFuli,
 			meta: {
@@ -120,6 +124,14 @@ export default new Router({
 			component: wscg,
 			meta: {
 				title: '完善信息'  
+			},
+		},
+		{
+			path: '/write',
+			name: 'write',
+			component: Write,
+			meta: {
+				title: '核销'  
 			},
 		},
 	]

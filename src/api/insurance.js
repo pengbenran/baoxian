@@ -27,4 +27,24 @@ export default {
 		return API.GET('/api/insurance/topUp',params)              
     },
 
+    //充值调用支付接口POST 
+    Prepay:params => {
+      return API.GET('/api/insurance/prepay',params)
+    },
+
+    //充值积分接口POST 
+    RechargePoint:params => {
+      return API.GET('/api/insurance/rechargePoint',params)
+    },
+
+    //核销员登录GET 
+    LoginHexiao:params => {
+      return API.GET('/api/insurance/judgeWriteOff',params)
+    },
+
+    //核销订单GET 
+    OrderHexiao:params => {
+      return API.GET('/api/insurance/orderWriteOff',params)
+    }
+
 }

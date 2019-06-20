@@ -23,7 +23,10 @@
 
 <script>
 	import mTabbar from '@/components/tabbar/Tabar.vue'
+	import { Toast } from 'vant';
 	import API from '@/api/home'
+	import API_C from '@/api/wscg'
+	import store from '@/store/store'
 	export default {
 		name: 'eFuli',
 		components: {
@@ -32,8 +35,18 @@
 		data() {
 			return {
 				select: 'tab1',
-				ishidd: true,
+				ishidd: false,
 				banner: []
+			}
+		},
+		created () {  
+			let openId=location.href.split('openId=')[1]
+			console.log(openId,"这是打印的OPid")
+			if(openId!=undefined){ 
+				this.getMemberInfo(openId) 
+			}
+			else{
+				this.getMemberInfo(store.state.userInfo.openId)
 			}
 		},
 		mounted(){
@@ -47,11 +60,41 @@
 					if(res.code == 0){
 						that.banner = res.getOneBanner;
 					}
-					console.log("成功后的数据",res,that.banner)
 				}).catch(err => {
-                    console.log("报错",err)
+					Toast.fail('失败3');
 				})
 			},
+
+
+            getMemberInfo(openId){
+				let that = this;
+				let LoadToast = Toast.loading({
+					mask: true,
+					message: '加载中...'
+				});
+				API.GetMenberInfo({openId:openId}).then(res => {
+					if(res.code == 0){
+						store.commit('storeUserInfo',res.member)
+						that.IsAddMenberInfo(res.member.memberId)
+					}
+					LoadToast.clear();
+				}).catch(err => {
+					Toast.fail('失败2');
+				})
+			},
+
+			//根据当前用户判断是否需要完善信息
+			IsAddMenberInfo(memberId){
+				let that = this;
+				API_C.GetMenberInfo({memberId:memberId}).then((res) => {
+					if(res.code != 0){
+                       that.ishidd = true;
+					}
+				}).catch((err) => {
+					Toast.fail('失败1');
+				});
+			},
+
 			//点击跳转
 			jumpfl(goodid) {
 				this.$router.push({

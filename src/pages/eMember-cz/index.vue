@@ -3,7 +3,7 @@
 	<div class="home">
 		<div class="tit">充值积分</div>
 		<div class="list">
-			<div class="list-li" :class="curr==index?'list-li-on':''" v-for="(item,index) in rmb" @click="on(index,item.money)">
+			<div class="list-li" :class="curr==index?'list-li-on':''" v-for="(item,index) in rmb" @click="on(index,item.money,item.id)">
 				<div class="jf">{{item.giveMoney}}积分</div>
 				<div class="rmb">{{item.money}}元</div>
 			</div>
@@ -33,6 +33,9 @@
 
 <script>
 	import API from '@/api/insurance'
+	import { Toast } from 'vant'
+	import store from '@/store/store'
+	import util from '@/utils/index'
 	export default {
 		components: {},
 		data() {
@@ -40,7 +43,8 @@
 				isPopup: false,
 				curr: 0,
 				money:0,
-				rmb: []
+				rmb: [],
+				rmbId:''
 			}
 		},
 		mounted(){
@@ -50,10 +54,11 @@
 			btn(){
 				this.isPopup=false
 			},
-			on(index,money) {
+			on(index,money,id) {
 				console.log(index)
 				this.curr = index
 				this.money = money
+				this.rmbId = id
 			},
 			
 			GetRmbList(){
@@ -61,12 +66,13 @@
                 API.GetaccountSettingList().then(res => {
 					if(res.code == 0){
 					   that.rmb = res.data;
-					   this.money = res.data[this.curr].money;
+                       that.rmbId = res.data[that.curr].id;
+					   that.money = res.data[that.curr].money;
 					}else{
-						mui.toast('列表未请求到',{ duration:'long', type:'div' }) 
+						Toast.fail('失败'); 
 					}
 				}).catch(err => {
-						mui.toast('网络错误',{ duration:'long', type:'div' }) 					
+						Toast.fail('失败'); 				
 				})
 			},
 
@@ -74,14 +80,14 @@
 			cz() {
 				this.$messagebox({				     
 					title: '温馨提示',
-					     message: '请核对充值金额',
-					     showCancelButton: true,
-					     confirmButtonText: "确定",
-					     cancelButtonText: "取消"					    
+				     message: '请核对充值金额',
+				     showCancelButton: true,
+				     confirmButtonText: "确定",
+				     cancelButtonText: "取消"					    
 				}).then(action => {				     
-					if(action == 'confirm') {					      
-						console.log('确定')						
-						this.isPopup=true  
+					if(action == 'confirm') {					      					
+						// this.isPopup=true  
+						this.payMoney();
 					} else {						      
 						console.log('取消')					     
 					}				   
@@ -92,7 +98,58 @@
 			payMoney(){
 				let that = this;
 				// API.PosttopUp()
+				let LoadToast = Toast.loading({
+					mask: true,
+					message: '加载中...'
+				});
+				let params ={}
+				// params.orderid = that.order.orderId
+				params.sn = util.random_No(5);
+				params.total_fee = 0.01 * 100
+				// params.total_fee = that.money * 100
+				params.openId=store.state.userInfo.openId
+				// let payParams={}
+				// payParams.params=JSON.stringify(params) 
+				API.Prepay(params).then(PayRes=>{
+					 WeixinJSBridge.invoke('getBrandWCPayRequest',{
+						timeStamp: PayRes.timeStamp, //时间戳从1970年1月1日00:00:00至今的秒数,即当前的时间,
+						nonceStr: PayRes.nonceStr, //随机字符串，长度为32个字符以下,
+						package: PayRes.package, //统一下单接口返回的 prepay_id 参数值，提交格式如：prepay_id=*,
+						signType: PayRes.signType, //签名算法，暂支持 MD5,
+						paySign: PayRes.paySign, //签名,具体签名方案参见小程序支付接口文档,
+						appId:'wxa08271def2635caf',
+					},function(res){
+						if(res.err_msg=="get_brand_wcpay_request:ok"){
+							that.UpPayPoint(LoadToast)
+						}else if(res.err_msg=="get_brand_wcpay_request:cancel"){
+					    	console.log('用户取消支付');
+						}  
+						else{
+					    	console.log("支付失败");
+						}
+					});
+				})
 			},
+
+			//充值积分的方法
+			UpPayPoint(LoadToast){
+			   let that = this;
+			   let data = {
+				   memberId:store.state.userInfo.memberId,
+				   id:that.rmbId
+			   }
+			   API.RechargePoint(data).then(res => {
+					LoadToast.clear();
+					if(res.code == 0){
+						Toast.success('成功');
+						this.$router.push({
+							path: '/eMember'
+						})
+					}
+			   }).catch(err =>{
+				   Toast.fail('网络错误');
+			   })
+			}
 			
 		},
 

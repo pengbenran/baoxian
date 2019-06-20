@@ -9,34 +9,34 @@
 		<div class="total">
 			<!--待参加-->
 			<div class="list1" v-if="curr==0">
-				<div class="list-li" v-for="(item,index) in list">
+				<div class="list-li" v-for="(item,index) in NEW_OrderList">
 					<div class="zt">待参加</div>
 					<div class="cant-top">
-						<div class="left"><img :src="item.img" /></div>
+						<div class="left"><img :src="item.orderItemsDO.image" /></div>
 						<div class="right">
-							<div class="name">{{item.name}}</div>
-							<div class="day">时间 : {{item.day}} 开始</div>
-							<div class="add">{{item.add}}</div>
+							<div class="name">{{item.orderItemsDO.name}}</div>
+							<div class="day">时间 : {{item.shipNo}} 开始</div>
+							<div class="add">地址：{{item.orderItemsDO.name}}</div>
 						</div>
 					</div>
 					<div class="cant-can">
 						<div class="cant-can-li">
-							<div class="gge">{{item.gge}}</div>
+							<div class="gge">支付方式：{{item.paymentName}}</div>
 							<div class="jf">
-								<span>¥{{item.jf}}积分</span>
-								<span>x{{item.num}}</span>
+								<span>¥{{item.orderAmount}}积分</span>
+								<span>x{{item.orderItemsDO.num}}</span>
 							</div>
 						</div>
 					</div>
 					<div class="cant-bottom">
 						<div class="cant-bottom-li">
 							<div class="hj">
-								<span>共{{item.num}}张票</span>
-								<span>合计 : ¥{{item.jf}}积分</span>
+								<span>共{{item.orderItemsDO.num}}张票</span>
+								<span>合计 : ¥{{item.orderAmount}}积分</span>
 							</div>
 							<div class="btn">
 								<span>取消报名</span>
-								<span @click="jumpdet">查看电子票</span>
+								<span @click="jumpdet(item.orderId)">查看电子票</span>
 							</div>
 						</div>
 					</div>
@@ -44,34 +44,34 @@
 			</div>
 			<!--已参加-->
 			<div class="list2" v-if="curr==1">
-								<div class="list-li" v-for="(item,index) in list">
+				<div class="list-li" v-for="(item,index) in OLD_OrderList">
 					<div class="zt">已参加</div>
 					<div class="cant-top">
-						<div class="left"><img :src="item.img" /></div>
+						<div class="left"><img :src="item.orderItemsDO.image" /></div>
 						<div class="right">
-							<div class="name">{{item.name}}</div>
-							<div class="day">时间 : {{item.day}} 开始</div>
-							<div class="add">{{item.add}}</div>
+							<div class="name">{{item.orderItemsDO.name}}</div>
+							<div class="day">时间 : {{item.shipNo}} 开始</div>
+							<div class="add">地址：{{item.orderItemsDO.name}}</div>
 						</div>
 					</div>
 					<div class="cant-can">
 						<div class="cant-can-li">
-							<div class="gge">{{item.gge}}</div>
+							<div class="gge">支付方式：{{item.paymentName}}</div>
 							<div class="jf">
-								<span>¥{{item.jf}}积分</span>
-								<span>x{{item.num}}</span>
+								<span>¥{{item.orderAmount}}积分</span>
+								<span>x{{item.orderItemsDO.num}}</span>
 							</div>
 						</div>
 					</div>
 					<div class="cant-bottom">
 						<div class="cant-bottom-li">
 							<div class="hj">
-								<span>共{{item.num}}张票</span>
-								<span>合计 : ¥{{item.jf}}积分</span>
+								<span>共{{item.orderItemsDO.num}}张票</span>
+								<span>合计 : ¥{{item.orderAmount}}积分</span>
 							</div>
 							<div class="btn">
-								<span>取消报名</span>
-								<span>查看电子票</span>
+								<!-- <span>取消报名</span> -->
+								<!-- <span @click="jumpdet">查看电子票</span> -->
 							</div>
 						</div>
 					</div>
@@ -82,8 +82,38 @@
 </template>
 
 <script>
+	import API from '@/api/order'
+	import { Toast } from 'vant';
+	import store from '@/store/store'
 	export default {
 		components: {},
+		data() {
+			return {
+				orderList:{},
+				curr: 0,
+				cate: [{
+						name: "待参加"
+					},
+					{
+						name: "已参加"
+					},
+				]
+			}
+		},
+		created(){
+            this.orderList = store.state.orderList;
+		},
+		computed:{
+			NEW_OrderList(){
+				return this.orderList.filter(f => f.status == 1)
+			},
+			OLD_OrderList(){
+				return this.orderList.filter(f => f.status == 2)
+			},
+		},
+		mounted(){
+			
+		},
 		methods: {
 			//点击跳转
 			jump() {
@@ -94,52 +124,15 @@
 			catelist(index) {
 				this.curr = index
 			},
-			  		//点击跳转
-			jumpdet(){ 
-				this.$router.push({path:'/hudongbaOrderDetail'}) 
+
+			//点击跳转
+			jumpdet(id){ 
+				this.$router.push({path:'/hudongbaOrderDetail',query:{id:id}}) 
 			},
 
+	
 		},
-		data() {
-			return {
-				curr: 0,
-				list: [{
-						img: "/static/images/flBanner.jpg",
-						name: '这是标题显示字体到了字数限制后',
-						day: '2019-05-21  10:00',
-						add: '地址：参加地点需要提供',
-						gge: '【显示免费】项目标题达到字数隐藏',
-						jf: 35,
-						num: 1,
-					},
-					{
-						img: "/static/images/flBanner.jpg",
-						name: '这是标题显示字体到了字数限制后',
-						day: '2019-05-21  10:00',
-						add: '地址：参加地点需要提供',
-						gge: '【显示免费】项目标题达到字数隐藏',
-						jf: 35,
-						num: 1,
-					},
-					{
-						img: "/static/images/flBanner.jpg",
-						name: '这是标题显示字体到了字数限制后',
-						day: '2019-05-21  10:00',
-						add: '地址：参加地点需要提供',
-						gge: '【显示免费】项目标题达到字数隐藏',
-						jf: 35,
-						num: 1,
-					}
-				],
-				cate: [{
-						name: "待参加"
-					},
-					{
-						name: "已参加"
-					},
-				]
-			}
-		}
+
 	}
 </script>
 <style scoped lang="less">

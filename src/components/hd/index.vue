@@ -1,11 +1,11 @@
 <template>
 	<!--精彩活动-->
 	<div class="hd-list">
-		<div class="hd-list-li" v-for="(item,index) in hdList" @click="jumpdetail">
-			<div class="img"><img :src="item.img" /></div>
+		<div class="hd-list-li" v-for="(item,index) in hdList" @click="jumpdetail(item.goodsId)">
+			<div class="img"><img :src="item.thumbnail" /></div>
 			<div class="name">{{item.name}}</div>
 			<div class="jf">
-				<span class="jfleft">{{item.jf}} 积分</span>
+				<span class="jfleft">{{item.price}} 积分</span>
 				<span class="jfright">{{btntit}}</span>
 			</div>
 		</div>
@@ -17,11 +17,12 @@
 		props: ['hdList'],
 		methods: {
 			//点击跳转
-			jumpdetail() {
+			jumpdetail(goodid) {
 				this.$router.push({
 					path: '/hudongbaDetail',
 					query: {
-						btntit: this.btntit
+						btntit: this.btntit,
+						id:goodid
 					}
 				})
 			},

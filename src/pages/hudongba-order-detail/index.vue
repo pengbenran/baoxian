@@ -7,12 +7,12 @@
 	  	 		<div class="yuan"></div> <!--左右两个缺口-->
 	  	 		<div class="yuan1"></div>
 	  	 		
-	  	 		<div class="gge">这个是规格名称字数到达一定的字数就</div>
-	  	 		<div class="name">游萧民(15083845338)</div>
+	  	 		<div class="gge">订单编号：{{orderDO.sn}}</div>
+	  	 		<div class="name">{{orderDO.shipName}}({{orderDO.shipMobile}})</div>
 	  	 		<div class="cancel">核销码</div>
-	  	 		<div class="code"><img src="/static/images/flBanner.jpg"/></div>
+	  	 		<div class="code"><img :src="orderDO.cancelReason"/></div>
 	  	 		<div class="zt">待核销</div>	  	 		
-	  	 		<div class="tit">商品标题名称字数到达一定的地方就没</div>
+	  	 		<div class="tit" v-if="orderDO.orderItemsDO">{{orderDO.orderItemsDO.name}}</div>
 	  	 		<div class="day">
 	  	 			<span>时       间：  </span>
 	  	 			<span>2019-08-02 09：00</span>
@@ -20,7 +20,7 @@
 	  	 		</div>
 	  	 		<div class="add">
 	  	 			<span>地       点：</span>  
-	  	 			<span>江西省南昌市青云谱区梦想小郑</span>
+	  	 			<span>{{orderDO.logiName}}</span>
 	  	 		</div>
 	  	 	</div>
 	  </div>
@@ -30,49 +30,63 @@
 				<span> <img src="/static/images/xing.png"/></span>
 				<span>精彩活动</span>
 			</div>
-		       <hd :hdList='hdList'></hd>
+		       <hd :hdList='Plist'></hd>
 		</div>
 	</div>
 </template>
 
 <script>
+	import API_O from '@/api/order'
+	import { Toast } from 'vant';
+	import API_G from '@/api/good'
 	import hd from '@/components/hd/index.vue'
 	export default {	
 		components:{hd},
 		data() {
 			return {
-				hdList:[
-				     {
-						img: "/static/images/flBanner.jpg",
-						name: '这里的标题支持支这么',
-						jf: 3456
-					},
-					 {
-						img: "/static/images/flBanner.jpg",
-						name: '这里的标题支持支这么',
-						jf: 3456
-					},
-					 {
-						img: "/static/images/flBanner.jpg",
-						name: '这里的标题支持支这么',
-						jf: 3456
-					},
-					{
-						img: "/static/images/flBanner.jpg",
-						name: '这里的标题支持支这么',
-						jf: 3456
-					},
-					{
-						img: "/static/images/flBanner.jpg",
-						name: '这里的标题支持支这么',
-						jf: 3456
-					},
-					{
-						img: "/static/images/flBanner.jpg",
-						name: '这里的标题支持支这么',
-						jf: 3456
-					},
-				]
+				orderId:'',
+				orderDO:{},
+				Plist:[],
+			}
+		},
+		mounted(){
+			this.orderId = this.$route.query.id;
+			console.log("查看一下订单号：",this.orderId)
+			this.GetOrderInfo();
+			this.GetGoodAll();
+		},
+		methods:{
+			// Get
+			GetOrderInfo(){
+				let that = this;
+				let loadToast = Toast.loading({
+					mask: true,
+					message: '加载中...'
+				});
+				API_O.GetOrderInfo({orderId:this.orderId}).then((res) => {
+					if(res.code == 0){
+						that.orderDO = res.orderDO;
+					}else{
+					Toast.fail('失败');						
+					}
+					loadToast.clear();
+				}).catch((err) => {
+					Toast.fail('失败');
+				});
+			},
+
+			//查询所有的活动
+			GetGoodAll(){
+				let that = this;
+        API_G.GetGoodsAll().then((res) => {
+          if(res.code == 0){
+						that.Plist = res.Goods;
+					}else{
+					mui.toast('网络错误',{ duration:'long', type:'div' }) 							
+					}
+				}).catch((err) => {
+					mui.toast('网络错误',{ duration:'long', type:'div' }) 		
+				});
 			}
 		}
 	}

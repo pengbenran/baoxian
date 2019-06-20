@@ -14,5 +14,15 @@ export default {
     //获取互动吧轮播图GET 
     GetGetTowBanner:params => {
 		return API.GET('/api/insurance/getTwoBanner',params)             
+    },
+
+    //保存订单 POST 
+    SavaOrder:params => {
+      return API.POST('/api/insurance/save',params)
+    },
+
+    //改变订单状态 POST /api/insurance/passOrder
+    PassOrder:params => {
+      return API.GET('/api/insurance/passOrder',params)
     }
 }

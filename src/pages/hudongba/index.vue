@@ -77,8 +77,6 @@
 					mui.toast('网络错误',{ duration:'long', type:'div' }) 		
 				});
 			},
-
-
 			
 			//查询所有的活动
 			GetGoodAll(){
