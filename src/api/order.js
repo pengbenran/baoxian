@@ -8,5 +8,10 @@ export default {
     //获取订单详情GET 
     GetOrderInfo:params => {
         return API.GET('/api/insurance/orderIntRo',params)
+    },
+
+    //取消订单GET 
+    cancelOrder:params => {
+        return API.GET('/api/insurance/cancelOff',params)
     }
 }

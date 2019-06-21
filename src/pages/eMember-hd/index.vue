@@ -35,7 +35,7 @@
 								<span>合计 : ¥{{item.orderAmount}}积分</span>
 							</div>
 							<div class="btn">
-								<span>取消报名</span>
+								<span @click="closeOrder(item.orderId)">取消报名</span>
 								<span @click="jumpdet(item.orderId)">查看电子票</span>
 							</div>
 						</div>
@@ -84,6 +84,7 @@
 <script>
 	import API from '@/api/order'
 	import { Toast } from 'vant';
+	import { Dialog } from 'vant';
 	import store from '@/store/store'
 	export default {
 		components: {},
@@ -129,6 +130,29 @@
 			jumpdet(id){ 
 				this.$router.push({path:'/hudongbaOrderDetail',query:{id:id}}) 
 			},
+
+			//取消订单
+			closeOrder(orderId){
+				Dialog.confirm({
+				title: '提示',
+				message: '是否确认取消'
+				}).then(() => {
+				// on confirm
+					let that = this;
+					API.cancelOrder({orderId:orderId}).then((res) => {
+						if(res.code == 0){
+							let index = that.NEW_OrderList.findIndex(item => item.orderId == orderId)
+							that.NEW_OrderList[index].status = 3;
+							Toast.success('取消成功');
+						}
+					}).catch((err) => {
+						Toast.fail('取消失败');
+					});
+				}).catch(() => {
+				//    Toast.fail('');
+				});
+
+			}
 
 	
 		},

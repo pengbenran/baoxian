@@ -23,7 +23,7 @@
 			</div>
 		</div>
 		<!--福利图片-->
-		<div class="fl"><img src="/static/images/fl.png" /></div>
+		<div class="fl"><img src="../../assets/images/index/fl.png" /></div>
 		<!--list-->
 		<div class="list">
 			<div class="tit">
@@ -31,7 +31,7 @@
 				<span @click="more">更多  > </span>
 			</div>
 			<div class="totic">
-				<div @click="jumpdetail" class="list-li" v-for="(item,index) in orderList" v-if="index < 2">
+				<div class="list-li" v-for="(item,index) in new_OrderList" v-if="index < 2" @click="jumpdetail(item.orderId)" >
 					<div class="left"><img :src="item.orderItemsDO.image" /></div>
 					<div class="right">
 						<div class="zt">{{item.status==1?'待参加':'已参加'}}</div>
@@ -54,7 +54,7 @@
 		<!--积分兑换-->
 		<div class="hd">
 			<div class="tit">
-				<span> <img src="/static/images/xing.png"/></span>
+				<span> <img src="../../assets/images/index/xing.png"/></span>
 				<span>精彩活动</span>
 			</div>
 			<hd :hdList='Plist'></hd>
@@ -82,7 +82,7 @@
 			return {
 				select: 'tab4',
 				UserInfo:{},
-				orderList:{},
+				orderList:[],
 				brand:[],
 				Plist:[],
 			}
@@ -94,6 +94,18 @@
 			this.GetBrandList();
 			this.GetGoodAll();
 			this.GetOrderList(this.UserInfo.memberId);
+		},
+		computed:{
+			new_OrderList(){
+				// return this.orderList.filter(f => f.status==1 || f.status==2)
+				let arr = []
+				this.orderList.map(M => {
+				 if(M.status == 1 || M.status == 2){
+                    arr.push(M)
+				 }  
+				})
+				return arr
+			}   
 		},
 		methods: {
 			more(){
@@ -114,10 +126,11 @@
 				})
 			},
 			//点击跳转
-			jumpdetail() { 
-				this.$router.push({
-					path: '/hudongbaDetail'
-				})
+			jumpdetail(id) { 
+				// this.$router.push({
+				// 	path: '/hudongbaDetail'
+				// })
+				this.$router.push({path:'/hudongbaOrderDetail',query:{id:id}}) 
 			},
 
 			//获取订单列表

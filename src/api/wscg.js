@@ -9,5 +9,11 @@ export default {
     //获取会员完善信息
     GetMenberInfo:params => {
         return API.GET('/api/insurance/getMemberInfo',params)
+    },
+
+    //发送短信接口GET /api/insurance/mobileCode
+    GetmobileCode:params => {
+        return API.GET('/api/insurance/mobileCode',params)
     }
+    
 }

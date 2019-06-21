@@ -9,7 +9,7 @@
 		<!---->
 		<div class="lists">
 			<div class="tit">
-				<span><img src="/static/images/xing.png"/></span>
+				<span><img src="../../assets/images/index/xing.png"/></span>
 				<span>精彩活动</span>
 			</div>
 			<div class="list">

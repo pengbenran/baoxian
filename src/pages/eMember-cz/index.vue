@@ -105,11 +105,10 @@
 				let params ={}
 				// params.orderid = that.order.orderId
 				params.sn = util.random_No(5);
-				params.total_fee = 0.01 * 100
-				// params.total_fee = that.money * 100
+				// params.total_fee = 0.01 * 100
+				params.total_fee = that.money * 100
 				params.openId=store.state.userInfo.openId
-				// let payParams={}
-				// payParams.params=JSON.stringify(params) 
+	
 				API.Prepay(params).then(PayRes=>{
 					 WeixinJSBridge.invoke('getBrandWCPayRequest',{
 						timeStamp: PayRes.timeStamp, //时间戳从1970年1月1日00:00:00至今的秒数,即当前的时间,
@@ -143,7 +142,7 @@
 					if(res.code == 0){
 						Toast.success('成功');
 						this.$router.push({
-							path: '/eMember'
+							path: '/home'
 						})
 					}
 			   }).catch(err =>{

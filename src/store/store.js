@@ -11,8 +11,13 @@ export default new Vuex.Store({
    storeUserInfo(state,userInfo){
    	state.userInfo=userInfo
    },
+
    StoreOrderList(state,orderList){
     state.orderList = orderList
+   },
+
+   jianPoint(state,point){
+    state.userInfo.point = state.userInfo.point - point
    }
   }
 })

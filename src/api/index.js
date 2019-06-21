@@ -34,7 +34,8 @@ axios.interceptors.response.use(response => {
 
 // let base = process.env.API_ROOT
 // let base=process.env.NODE_ENV !== 'production' && process.env.OPEN_PROXY ? '/proxyApi/' : window.SITE_CONFIG.baseUrl
-let base = 'http://192.168.2.131:8080'
+// let base = 'http://192.168.2.131:8080' 
+let base = 'https://insurance.guqinet.com'
 
 //通用方法
 export const POST = (url, params) => {

@@ -13,7 +13,7 @@
 					<span>50</span>
 					<span>积分</span>
 				</div>
-				<div class="img"><img src="/static/images/index-pop.png" /> </div>
+				<div class="img"><img src="../../assets/images/index/index-pop.png" /> </div>
 			</div>
 			<div class="cha icon">&#xe61a;</div>
 		</div>
@@ -61,7 +61,7 @@
 						that.banner = res.getOneBanner;
 					}
 				}).catch(err => {
-					Toast.fail('失败3');
+					Toast.fail('失败');
 				})
 			},
 
@@ -79,7 +79,7 @@
 					}
 					LoadToast.clear();
 				}).catch(err => {
-					Toast.fail('失败2');
+					Toast.fail('失败');
 				})
 			},
 
@@ -91,18 +91,20 @@
                        that.ishidd = true;
 					}
 				}).catch((err) => {
-					Toast.fail('失败1');
+					Toast.fail('失败');
 				});
 			},
 
 			//点击跳转
 			jumpfl(goodid) {
-				this.$router.push({
-					path: '/homeFl',
-					query:{
-						id:goodid
-					}
-				})
+				if(goodid){
+					this.$router.push({
+						path: '/homeFl',
+						query:{
+							id:goodid
+						}
+					})
+				}
 			},
 			//点击跳转
 			jumpws() {

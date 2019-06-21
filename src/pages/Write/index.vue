@@ -2,14 +2,11 @@
     <div>
 	<div class="pop" v-if="ispop">
 			<div class="banner">
-				<p class="img"><img src="/static/images/succeed.jpg" /></p>
+				<p class="img"><img src="../../assets/images/index/succeed.jpg" /></p>
 				<p class="tit">{{taskBool?'核销成功':'核销中'}}</p>
 			</div>
 			<div class="btn" @click="jump" v-if="!taskBool">重试</div>
 		</div>
-
-
-
 
         <van-dialog v-model="show" title="核销员登录" :show-confirm-button="false" :show-cancel-button="false" >
          <div class="LoginModel">

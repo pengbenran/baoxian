@@ -1,27 +1,20 @@
 <template>
 	<!--领取e福利-->
  <div class="home">
-    <div class="banner"><img :src="banner"/></div>    
-    <div class="cants" v-for="(item,index) in cant">
-    	<div class="img"><img mode='widthFix' :src="item.img"/></div>
-    	<div class="more">查看更多 ></div>
-    </div>    
-    <div class="fx"><img src="/static/images/fx.png"/></div>
+    <div v-html="goodInfo.intro?goodInfo.intro:'暂无详情'"></div>
     <div class="btn" @click="jump">立即预约</div>
   </div>
 </template>
 <script>
 import API from '@/api/good'
+import { Toast } from 'vant';
 export default { 
   data () {
     return {
-			banner:'/static/images/flBanner.jpg',
+			btntit:"立即预约",
+			goodInfo:{},
 			goodsId:'',
-    	cant:[
-    	  {img:"/static/images/flCant.jpg"},
-    	  {img:"/static/images/flCant.jpg"},
-    	  {img:"/static/images/flCant.jpg"},
-    	]
+    	
     }
 	},
 	mounted(){
@@ -30,16 +23,28 @@ export default {
 	},
 	methods: {
     Getdetail(){
+			let that = this;
       API.GetgetGoodsInfo({goodsId:this.goodsId}).then((res) => {
-				console.log(res,"数据")
+				if(res.code == 0){
+           that.goodInfo = res.Goods;
+				}else{
+					Toast.fail('请求失败1');
+				}
 			}).catch((err) => {
-				console.log("报错的数据",err)
+				Toast.fail('请求失败2');
 			});
 		},
 
   		//点击跳转
 		jump(){ 
-			this.$router.push({path:'/homeFlDetail'}) 
+			let that = this;
+			this.$router.push({
+					path: '/hudongbaDetail',
+					query: {
+						btntit:this.btntit,
+						id:that.goodsId
+					}
+				})
 		},
 	}, 
 

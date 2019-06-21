@@ -63,7 +63,7 @@
 		<!--底部-->
 		<div class="footer">
 			<div class="footer-li">
-				<a href='tel:+15623140205'>
+				<a href='tel:+13606835511'>
 				<span class="icon">&#xe65e;</span>
 				<span>客服</span>
 				</a>
@@ -139,6 +139,7 @@
 
 <script>
 	import { Toast } from 'vant';
+	import { Dialog } from 'vant';
 	import API from '@/api/good'
 	import API_C from '@/api/wscg'
 	import store from '@/store/store'
@@ -207,7 +208,18 @@
 			},
 			btn(){
 				let that = this
-				that.ispopup = true 
+				if(store.state.userInfo.point >= this.Goods.price){
+					Dialog.confirm({
+					title: '提示',
+					message: '是否确认购买'
+					}).then(() => {
+					    that.ispopup = true 
+					}).catch(() => {
+					   	Toast.fail('取消');	
+					});
+				}else{
+					Toast.fail('抱歉你的积分不够');	
+				}
 			},
 			popBtn() {
 				let that = this
@@ -247,6 +259,7 @@
 					  Toast.success('成功');
 					  	//点击跳转
 						// that.$router.push({path:'/hudongbaOrderDetail',query:{id:res.orderId}}) 
+						store.commit('jianPoint',this.Goods.price)
 						this.$router.push({path:'/hudongbaOrderDetail',query:{id:orderId}}) 
 					}else{
 						Toast.fail('失败');

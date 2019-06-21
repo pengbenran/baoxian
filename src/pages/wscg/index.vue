@@ -3,28 +3,29 @@
 	<div class="home">
 		<div class="form">
 			<div class="inp1">
-				<span>姓名</span>
+				<span class="span1">姓名</span>
 				<span><input type="text" v-model="name"  placeholder="请输入姓名"/></span>
 			</div>
 			<div class="inp2">
-				<span>手机号码</span>
+				<span class="span1">手机号码</span>
 				<span>
 				<input class="phone input-style " 
 				       :class="{'err-input' : phone.err}" v-model="phone.val" type="text" 
 					   placeholder="请输入手机号" oninput = "value=value.replace(/[^\d]/g,'')" maxlength="11" @blur="phone.test()">
 				</span>
 			</div>
-			<!-- <div class="inp3">
-				<span>验证码</span>
-				<span><input type="text" placeholder="请输入验证码"/></span>
-			</div> -->
+			<div class="inp3">
+				<span class="span1">验证码</span>
+				<span><input type="text" v-model="yanzhen" placeholder="请输入验证码"/></span>
+				<van-button round type="primary" size="small" :disabled='!show' @click="getCode">获取验证码{{count?count:''}}</van-button>
+			</div>
 
 			<div class="more" @click="AddMenberInfo">确定</div>
 		</div>
 		<!--弹窗-->
 		<div class="pop" v-if="ispop">
 			<div class="banner">
-				<p class="img"><img src="/static/images/succeed.jpg" /></p>
+				<p class="img"><img src="../../assets/images/index/succeed.jpg" /></p>
 				<p class="tit">完善成功</p>
 			</div>
 			<div class="btn" @click="jump">回到首页</div>
@@ -33,7 +34,8 @@
 </template>
 
 <script>
-    import API from "@/api/wscg";
+	import API from "@/api/wscg";
+	import { Toast } from 'vant';
 	import store from '@/store/store'
 	export default {
 		data() {
@@ -41,6 +43,11 @@
 				ispop: false,
 				isreg:true,
 				name:'',
+			    show: true,
+			    count: '',
+			    timer: null,
+			    Zyanzhen:'',
+			    yanzhen:'',
 				phone: {
                     val : '',
                     err : false,
@@ -81,25 +88,60 @@
 				})
 			},
 
-			//添加用户信息
-			AddMenberInfo(){
-				let that = this;
-				console.log("你好世界阿萨德");
-				if(that.phone.pass){
-					API.addMemberInfo({name:that.name,mobile:that.phone.val,memberId:store.state.userInfo.memberId}).then((res) => {
-						console.log(res)
-						if(res.code == 0){
-							this.ispop = true
-						}else{
-
+			 getCode(){
+				if(this.phone.val){
+					this.GetMobile();
+					const TIME_COUNT = 60;
+					if (!this.timer) {
+					this.count = TIME_COUNT;
+					this.show = false;
+					this.timer = setInterval(() => {
+					if (this.count > 0 && this.count <= TIME_COUNT) {
+						this.count--;
+						} else {
+						this.show = true;
+						clearInterval(this.timer);
+						this.timer = null;
 						}
-					}).catch((err) => {
-						console.log("添加失败")
-					});
+					}, 1000)
+					}					
+				}else{
+                    Toast.fail('请输入电话号码');		
 				}
 			},
 
-		
+			//发送短信接口
+			GetMobile(){
+				let that = this;
+				API.GetmobileCode({mobile:that.phone.val}).then(res => {
+					if(res != undefined){
+						that.Zyanzhen = res.code
+						Toast.success('发送成功');
+					}
+				})
+			},
+
+			//添加用户信息
+			AddMenberInfo(){
+				let that = this;
+				console.log(parseInt(that.Zyanzhen),parseInt(that.phone.val))
+				if(parseInt(that.Zyanzhen) === parseInt(that.yanzhen)&&that.phone.val!=''&&that.name!=''){
+					if(that.phone.pass){
+						API.addMemberInfo({name:that.name,mobile:that.phone.val,memberId:store.state.userInfo.memberId}).then((res) => {
+							console.log(res)
+							if(res.code == 0){
+								this.ispop = true
+							}else{
+
+							}
+						}).catch((err) => {
+							console.log("添加失败")
+						});
+					}
+				}else{
+                    Toast.fail('输入的信息不全！');		
+				}
+			},
 		},
 
 	}
@@ -129,11 +171,10 @@
 				line-height: 58px;
 				display: flex;
 				align-items: center;
+				.span1{width: 28%;}
 				span {
 					display: block;
-					&:nth-child(1) {
-						width: 28%;
-					}
+				
 					&:nth-child(2) {
 						width: 40%;
 					}
